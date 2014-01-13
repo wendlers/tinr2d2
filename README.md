@@ -31,6 +31,6 @@ Full Robot, Pink
 ![tinr2d2 black](cad/export/png/tinr2d2_pink.png "Tin Can R2D2 pink")
 
 
-Exploded Ronbot
+Exploded Robot
 
 ![tinr2d2 exploded](cad/export/png/tinr2d2_explode.png "Tin Can R2D2 exploded")
