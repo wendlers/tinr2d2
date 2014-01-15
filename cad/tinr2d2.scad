@@ -15,6 +15,7 @@ can_hig=129;					// hight of tin can
 can_tkn=2;					// thickness of tin can
 can_rad=51;					// radius of tin can
 							// 51 is for lavazza espresso can
+can_rad_inner=can_rad-4;
 
 base_hig=10;					// hight of top/bottom base
 base_tkn=2;					// thickness of top/bottom base borders
@@ -33,8 +34,8 @@ bod_rot=20;					// deg. of how much can is rotated in respect to the legs
 
 /* some views showing the robot as a whole */
 
-// show_full_robot(0);
-show_full_robot(1);
+show_full_robot(0);
+// show_full_robot(1);
 // show_exploded_robot();
 
 /* the print views for exporting to STL/3D printer */
@@ -50,7 +51,11 @@ show_full_robot(1);
 // print_leg1();
 // print_leg2();
 
+// print_inlay();
+
 /* some test views of single parts */
+
+// inlay(can_hig, 94/2, base_tkn, 1);
 
 // dome(base_rad, 3);
 // dome_top(base_rad, 2);
@@ -327,6 +332,149 @@ module top(hig, rad, tkn, leg_tkn)
 		}
 }
 
+module battery1()
+{
+	w=34;
+	h=64;
+	t=13;
+
+	translate([0, 15, -(76.5-h)/2-4])
+		cube([w, t, h], center=true);
+}
+
+module battery2()
+{
+	w=31;
+	h=52;
+	t=10;
+
+	translate([0, 30, -(76.5-h)/2-4])
+		cube([w, t, h], center=true);
+}
+
+module ext_board()
+{
+	w=51.5;
+	h=76.5;
+	t=2;
+
+	union()
+	{
+		// Ext. board
+		translate([0, -9, 0])
+			cube([w, t, h], center=true);
+	
+		// BTBee
+		translate([0, -9 - 6, h/2 - 34/2])
+			cube([24, 12, 34], center=true);
+
+		// Motor controller
+		translate([-10, -9 - 2.25, -10])
+			cube([20, 4.5, 20], center=true);
+
+		// Step-Up/Down
+		translate([+15, -9 - 2.25, -10])
+			cube([12, 4.5, 17], center=true);
+	}
+}
+
+module prop_qs()
+{
+	w=51.5;
+	h=76.5;
+	t=2;
+
+	union()
+	{
+		// Propeller QuickStart board
+		cube([w, t, h], center=true);
+
+		// Ext. connector
+		translate([w/2-2.5-3, -4, 0])
+			cube([5, 8, 50], center=true);
+
+		// USB connector
+		translate([0, -2.25, h/2-3.75])
+			cube([7.5, 4.5, 9], center=true);
+	}
+}
+
+module inlay(hig, rad, tkn, showboard)
+{
+	w1=51.5 + 8;
+	w2=51.5 - 4;
+	h1=83;
+	h2=75+2;
+	t=2;
+
+	union()
+	{
+	difference()
+	{	
+		cylinder(h=tkn, r=rad);
+
+		translate([0, 0, -2])
+			rotate([0, 0, 180])
+				bottop_cylseg(rad, 4*tkn);
+
+		translate([0, 0, -2])
+			rotate([0, 0, 270])
+				bottop_cylseg(rad, 4*tkn);
+
+		translate([0, 0, -2])
+			rotate([0, 0, 90])
+				bottop_cylseg(rad, 4*tkn);
+
+		translate([0, 0, -2])
+			rotate([0, 0, 0])
+				bottop_cylseg(rad, 4*tkn);
+	}
+
+	translate([0, 0, h1/2])
+	{
+		difference()
+		{
+			cube([w1, 10, h1], center=true);
+
+			translate([0,0,h1-h2])
+				cube([w1 - (w1 - w2), 10, h2], center=true);
+
+			translate([0,0,h1-h2-t])
+				prop_qs();			
+		}
+
+		difference()
+		{
+			translate([0, 43/2, -h1/2 + 15])
+				cube([38, 31, 30], center=true);	
+
+			translate([0, 0, tkn+1])
+			{
+				battery1();
+				battery2();
+			}
+		}
+	}
+
+	}
+
+	if(showboard == 1)
+	{
+		translate([0,0,h1/2 + (h1-h2-t)])
+		{
+			prop_qs();
+			ext_board();
+			battery1();
+			battery2();
+		}
+	}
+}
+
+module print_inlay()
+{
+	inlay(can_hig, can_rad_inner, base_tkn, 0);
+}
+
 module leg_drill_hole(hig, wid, tkn, rad)
 {
 	translate([-wid/2, rad, 0]) {
@@ -593,7 +741,7 @@ module dome_top(rad, tkn)
 		translate([0, 0, rad*0.6])
 			cylinder(h=tkn, r=drad);
 
-		translate([0, 0, rad*0.6-tkn]) 
+		translate([0, 0, rad*0.6-2*tkn]) 
 		{
 			difference() 
 			{
@@ -711,7 +859,15 @@ module show_full_robot(showcan)
 				dome_top(base_rad, 2);
 			}
 			if(showcan == 1)
+			{
 				can(can_hig, can_rad, can_tkn);
+			}
+			else
+			{
+				translate([0, 0, base_tkn + can_tkn])
+					rotate([0, 0, 279])
+						inlay(can_hig, can_rad_inner, base_tkn, 1);
+			}
 		}
 		translate([-can_rad-can_rad*0.5, 0, -20])
 			rotate([0, 0, 90])
@@ -736,6 +892,10 @@ module show_exploded_robot()
 			{
 				dome_top(base_rad, 2);
 			}
+
+			translate([0, 0, base_tkn + can_tkn + 25])
+				rotate([0, 0, 270])
+					inlay(can_hig, can_rad_inner, base_tkn, 0);
 		}
 
 		translate([-can_rad-can_rad*0.5, 0, -40])
