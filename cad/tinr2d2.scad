@@ -34,9 +34,9 @@ bod_rot=20;					// deg. of how much can is rotated in respect to the legs
 
 /* some views showing the robot as a whole */
 
-show_full_robot(0);
+// show_full_robot(0);
 // show_full_robot(1);
-// show_exploded_robot();
+show_exploded_robot();
 
 /* the print views for exporting to STL/3D printer */
 
@@ -348,7 +348,7 @@ module battery2()
 	h=52;
 	t=10;
 
-	translate([0, 30, -(76.5-h)/2-4])
+	translate([0, 28, -(76.5-h)/2-4])
 		cube([w, t, h], center=true);
 }
 
@@ -401,61 +401,106 @@ module prop_qs()
 
 module inlay(hig, rad, tkn, showboard)
 {
-	w1=51.5 + 8;
+	w1=51.5 + 5;
 	w2=51.5 - 4;
 	h1=83;
-	h2=75+2;
+	h2=77;
 	t=2;
 
 	union()
 	{
-	difference()
-	{	
-		cylinder(h=tkn, r=rad);
 
-		translate([0, 0, -2])
-			rotate([0, 0, 180])
-				bottop_cylseg(rad, 4*tkn);
-
-		translate([0, 0, -2])
-			rotate([0, 0, 270])
-				bottop_cylseg(rad, 4*tkn);
-
-		translate([0, 0, -2])
-			rotate([0, 0, 90])
-				bottop_cylseg(rad, 4*tkn);
-
-		translate([0, 0, -2])
-			rotate([0, 0, 0])
-				bottop_cylseg(rad, 4*tkn);
-	}
-
-	translate([0, 0, h1/2])
-	{
 		difference()
-		{
-			cube([w1, 10, h1], center=true);
+		{	
+			cylinder(h=tkn, r=rad);
+/*
+			translate([0, 0, -2])
+				rotate([0, 0, 180])
+					bottop_cylseg(rad, 4*tkn);
 
-			translate([0,0,h1-h2])
-				cube([w1 - (w1 - w2), 10, h2], center=true);
+			translate([0, 0, -2])
+				rotate([0, 0, 270])
+					bottop_cylseg(rad, 4*tkn);
+*/
+			translate([0, 0, -2])
+				rotate([0, 0, 90])
+					bottop_cylseg(rad, 4*tkn);
 
-			translate([0,0,h1-h2-t])
-				prop_qs();			
+			translate([0, 0, -2])
+				rotate([0, 0, 0])
+					bottop_cylseg(rad, 4*tkn);
+
 		}
 
-		difference()
+		translate([0, 0, h1/2])
 		{
-			translate([0, 43/2, -h1/2 + 15])
-				cube([38, 31, 30], center=true);	
-
-			translate([0, 0, tkn+1])
+			difference()
 			{
-				battery1();
-				battery2();
-			}
-		}
-	}
+				cube([w1, 10, h1], center=true);
 
+				translate([0,0,h1-h2])
+					cube([w1 - (w1 - w2), 10, h2], center=true);
+
+				translate([0,0,h1-h2-t])
+					prop_qs();			
+			}
+
+			difference()
+			{
+				translate([0, 15, -h1/2 + 15])
+					cube([38, 17, 30], center=true);	
+
+				translate([0, 0, tkn+1])
+				{
+					battery1();
+				}
+				translate([0, 40, -25])
+					rotate([90, 0, 0])
+						cylinder(r=10, h=40);
+				translate([9, 14.5, -h2/2-2*tkn])
+					cylinder(r=4, h=4);
+				mirror([1, 0, 0])
+					translate([9, 14.5, -h2/2-2*tkn])
+						cylinder(r=4, h=4);
+			translate([-20, 15, -18])
+				rotate([0, 90, 0])
+					cylinder(r=3, h=40);
+			translate([-20, 15, -26])
+				rotate([0, 90, 0])
+					cylinder(r=3, h=40);
+			translate([-20, 15, -34])
+				rotate([0, 90, 0])
+					cylinder(r=3, h=40);
+			}
+			difference()
+			{
+				translate([0, 28, -h1/2 + 15])
+					cube([35, 14, 30], center=true);	
+
+				translate([0, 0, tkn+1])
+				{
+					battery2();
+				}
+				translate([0, 40, -25])
+					rotate([90, 0, 0])
+						cylinder(r=10, h=40);
+				translate([9, 28.5, -h2/2-2*tkn])
+					cylinder(r=3, h=4);
+				mirror([1, 0, 0])
+					translate([9, 28.5, -h2/2-2*tkn])
+						cylinder(r=3, h=4);
+				translate([-20, 28, -18])
+					rotate([0, 90, 0])
+						cylinder(r=2.5, h=40);
+				translate([-20, 28, -26])
+					rotate([0, 90, 0])
+						cylinder(r=2.5, h=40);
+				translate([-20, 28, -34])
+					rotate([0, 90, 0])
+						cylinder(r=2.5, h=40);
+			}
+
+		}
 	}
 
 	if(showboard == 1)
@@ -470,9 +515,32 @@ module inlay(hig, rad, tkn, showboard)
 	}
 }
 
+module inlay_base(showboard)
+{
+	translate([45, 0, -base_tkn - can_tkn])
+		rotate([0, -bod_rot, 0])	
+			rotate([0, bod_rot, 0])
+			{
+				difference() {
+
+					translate([-45, 0, 0])
+					{			
+						translate([0, 0, base_tkn + can_tkn])
+							rotate([0, 0, 270])
+								inlay(can_hig, can_rad_inner, base_tkn, showboard);
+					}
+
+					translate([-can_rad-can_rad*0.5, 0, -20])
+						rotate([0, 0, 90])
+							front_wheel_drill_holes();
+				}
+		}	
+}
+
 module print_inlay()
 {
-	inlay(can_hig, can_rad_inner, base_tkn, 0);
+	inlay_base(0);
+	// inlay(can_hig, can_rad_inner, base_tkn, 0);
 }
 
 module leg_drill_hole(hig, wid, tkn, rad)
@@ -686,16 +754,16 @@ module front_wheel_drill_holes()
 {
 	
 	translate([8, -5, 19])
-		cylinder(h=10, r=1.9, center=true);
+		cylinder(h=20, r=1.9, center=true);
 	translate([8, +5, 19])
-		cylinder(h=10, r=1.9, center=true);
+		cylinder(h=20, r=1.9, center=true);
 
 	mirror([1, 0, 0])
 	{
 		translate([8, -5, 19])
-			cylinder(h=10, r=1.9, center=true);
+			cylinder(h=20, r=1.9, center=true);
 		translate([8, +5, 19])
-			cylinder(h=10, r=1.9, center=true);
+			cylinder(h=20, r=1.9, center=true);
 	}
 }
 
@@ -864,9 +932,7 @@ module show_full_robot(showcan)
 			}
 			else
 			{
-				translate([0, 0, base_tkn + can_tkn])
-					rotate([0, 0, 279])
-						inlay(can_hig, can_rad_inner, base_tkn, 1);
+				inlay_base(1);
 			}
 		}
 		translate([-can_rad-can_rad*0.5, 0, -20])
@@ -892,10 +958,8 @@ module show_exploded_robot()
 			{
 				dome_top(base_rad, 2);
 			}
-
-			translate([0, 0, base_tkn + can_tkn + 25])
-				rotate([0, 0, 270])
-					inlay(can_hig, can_rad_inner, base_tkn, 0);
+			translate([0, 0, 25])
+				inlay_base(0);
 		}
 
 		translate([-can_rad-can_rad*0.5, 0, -40])
