@@ -109,7 +109,7 @@ CON
 
   '' Serial port settings for shell
   '' BAUD_RATE 	= 8_761                                ' Turns out to be about 9600 with rcfast on my board
-  BAUD_RATE     = 115_200
+  BAUD_RATE     = 9600
 
   RX_PIN 	= 1
   TX_PIN 	= 0
@@ -117,11 +117,11 @@ CON
   ''RX_PIN 		= 31
   ''TX_PIN 		= 30
 
-  MOT_AO1       = 2
-  MOT_AO2       = 3
+  MOT_AO1       = 3
+  MOT_AO2       = 2
   MOT_PWMA      = 6
-  MOT_BO1       = 4
-  MOT_BO2       = 5
+  MOT_BO1       = 5
+  MOT_BO2       = 4
   MOT_PWMB      = 7
 
   MOT_SPEED_DELTA = 5
@@ -145,11 +145,13 @@ PUB main | i
 '' // Main routine. Init the shell, prompt for commands, handle commands.
 '' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  curSpeedA := 100
-  curSpeedB := 100
+  curSpeedA := 33
+  curSpeedB := 33
 
   mc.init(MOT_AO1, MOT_AO2, MOT_PWMA, MOT_BO1, MOT_BO2, MOT_PWMB)
   ps.init(false, false, BAUD_RATE, RX_PIN, TX_PIN)
+
+  ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
 
   repeat
 
@@ -252,6 +254,9 @@ PRI cmdSetSpeed(forMe) | ab, a, b, d, speed
     elseif curSpeedA < 0
       curSpeedA := 0
     mc.setSpeed(mc#MOT_A, curSpeedA)
+    ps.puts(string("!INFO speedA: "))
+    ps.putd(curSpeedA)
+    ps.puts(string(ps#CR, ps#LF))
   elseif b
     curSpeedB := curSpeedB + d
     if curSpeedB > 100
@@ -259,6 +264,9 @@ PRI cmdSetSpeed(forMe) | ab, a, b, d, speed
     elseif curSpeedB < 0
       curSpeedB := 0
     mc.setSpeed(mc#MOT_B, curSpeedB)
+    ps.puts(string("!INFO speedB: "))
+    ps.putd(curSpeedB)
+    ps.puts(string(ps#CR, ps#LF))
 
   ps.commandHandled
 

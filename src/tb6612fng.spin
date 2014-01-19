@@ -46,7 +46,7 @@
 CON
 
   PWM_FREQ_HZ   = 18_000        ' Freq. for PWM
-  INITIAL_DC_PC = 100           ' Initial duty-cycle for PWM
+  INITIAL_DC_PC = 33            ' Initial duty-cycle for PWM
 
   MOT_A       = 1               ' Address motor A
   MOT_B       = 2               ' Address motor B

@@ -36,7 +36,7 @@ bod_rot=20;					// deg. of how much can is rotated in respect to the legs
 
 // show_full_robot(0);
 // show_full_robot(1);
-show_exploded_robot();
+// show_exploded_robot();
 
 /* the print views for exporting to STL/3D printer */
 
@@ -45,7 +45,7 @@ show_exploded_robot();
 // print_front_wheel_leg2();
 
 // print_bottom_base();
-// print_top_base();
+print_top_base();
 // print_dome_top();
 
 // print_leg1();
@@ -54,6 +54,8 @@ show_exploded_robot();
 // print_inlay();
 
 /* some test views of single parts */
+
+// inlay_base(1);
 
 // inlay(can_hig, 94/2, base_tkn, 1);
 
@@ -852,7 +854,7 @@ module dome(rad, tkn)
 						cube([t, 25-tkn, 25-tkn], center=true);
 					rotate([0, 90, 0])
 						translate([-2.5, 0, -20])
-							cylinder(h=20, r=5.5);
+							cylinder(h=20, r=8.5);
 				}
 		}
 	}
