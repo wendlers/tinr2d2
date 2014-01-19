@@ -13,6 +13,11 @@
 can_hig=129;					// hight of tin can
 							// 129 is for lavazza espresso can
 can_tkn=2;					// thickness of tin can
+
+// ****
+// ** NOTE TO SELF: use 51.5 on next robot to make it fit NOT so tight !!!!
+// ****
+
 can_rad=51;					// radius of tin can
 							// 51 is for lavazza espresso can
 can_rad_inner=can_rad-4;
@@ -45,15 +50,18 @@ bod_rot=20;					// deg. of how much can is rotated in respect to the legs
 // print_front_wheel_leg2();
 
 // print_bottom_base();
-print_top_base();
+// print_top_base();
 // print_dome_top();
 
 // print_leg1();
 // print_leg2();
 
 // print_inlay();
+print_led_panel();
 
 /* some test views of single parts */
+
+// led_panel();
 
 // inlay_base(1);
 
@@ -808,9 +816,17 @@ module dome_top(rad, tkn)
 
 	union()
 	{
-		translate([0, 0, rad*0.6])
-			cylinder(h=tkn, r=drad);
+		translate([0, 0, rad*0.6]) 
+		{
+			difference()
+			{
+				cylinder(h=tkn, r=drad);
 
+				// hole for the on/off switch
+				cube([22, 20.9, 20], center=true);
+			}
+		}
+	
 		translate([0, 0, rad*0.6-2*tkn]) 
 		{
 			difference() 
@@ -819,6 +835,7 @@ module dome_top(rad, tkn)
 				cylinder(h=tkn*2, r=drad-2*tkn);
 			}
 		}
+
 	}
 }
 
@@ -858,6 +875,105 @@ module dome(rad, tkn)
 				}
 		}
 	}
+}
+
+module led_panel()
+{
+	w1 = 40;
+	w2 = 30;
+	t1 = 15;
+	t2 = 2;
+
+	rotate([0, 0, 90])
+	difference()
+	{
+
+		union()
+		{
+			translate([0, can_rad, can_hig - w1 - t1])
+			{
+				difference() 
+				{
+					cube([w1, t1, w2], center=true);
+					translate([0, -t2, 0])
+						cube([w1 - 2 * t2, t1 - t2, w2 - 2 * t2], center=true);
+				}
+			}
+
+			translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 - 4 + w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1 - 1, r=4);
+			mirror([1, 0, 0])
+				translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 - 4 + w2 / 2])
+					rotate([90, 0, 0])
+						cylinder(h=t1 - 1, r=4);
+
+			translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 + 4 - w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1 - 1, r=4);
+			mirror([1, 0, 0])
+				translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 + 4 - w2 / 2])
+					rotate([90, 0, 0])
+						cylinder(h=t1 - 1, r=4);
+		}
+
+		intersection() 
+		{
+			translate([0, 0, can_tkn])
+				cylinder(h=can_hig, r=can_rad);
+			translate([0, can_rad, can_hig - w1 - t1])
+				cube([w1, t1, w2], center=true);
+		}
+
+		// holes for all the LEDs forming a mouth
+		translate([0, can_rad + t1, can_hig - w1 - t1])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+		translate([+7, can_rad + t1, can_hig - w1 - t1])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+		translate([-7, can_rad + t1, can_hig - w1 - t1])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+
+		translate([+14, can_rad + t1, can_hig - w1 - t1 + 3.5])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+		translate([-14, can_rad + t1, can_hig - w1 - t1 + 3.5])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+
+		translate([+14, can_rad + t1, can_hig - w1 - t1 - 3.5])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+		translate([-14, can_rad + t1, can_hig - w1 - t1 - 3.5])
+			rotate([90, 0, 0])
+				cylinder(h=20, r=1.55);
+
+		// drill holes
+		translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 - 4 + w2 / 2])
+			rotate([90, 0, 0])
+				cylinder(h=t1, r=1.6);
+		mirror([1, 0, 0])
+			translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 - 4 + w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1, r=1.6);
+	
+		translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 + 4 - w2 / 2])
+			rotate([90, 0, 0])
+				cylinder(h=t1, r=1.6);
+		mirror([1, 0, 0])
+			translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 + 4 - w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1, r=1.6);
+	}
+}
+
+module print_led_panel()
+{
+	translate([can_rad, 0, can_rad + 7.5])
+		rotate([0, -90, 0])	
+			led_panel();
 }
 
 module print_dome_top()
@@ -936,6 +1052,7 @@ module show_full_robot(showcan)
 			{
 				inlay_base(1);
 			}
+			led_panel();
 		}
 		translate([-can_rad-can_rad*0.5, 0, -20])
 			rotate([0, 0, 90])
@@ -962,6 +1079,8 @@ module show_exploded_robot()
 			}
 			translate([0, 0, 25])
 				inlay_base(0);
+
+			led_panel();
 		}
 
 		translate([-can_rad-can_rad*0.5, 0, -40])
