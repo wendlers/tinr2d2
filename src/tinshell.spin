@@ -124,15 +124,24 @@ CON
   MOT_BO2       = 4
   MOT_PWMB      = 7
 
-  MOT_SPEED_DELTA = 5
+  MOT_SPEED_DELTA = 1
 
   SPEAKER       = 10
+
+  LED1          = 14
+  LED2          = 16
+  LED3          = 18
+  LED4          = 20
+  LED5          = 22
+  LED6          = 24
+  LED7          = 26
 
 OBJ
 
   ps	: "propshell"
   mc    : "tb6612fng"
   pcm   : "pcm"
+  led   : "ledpanel"
 
 VAR
 
@@ -145,11 +154,17 @@ PUB main | i
 '' // Main routine. Init the shell, prompt for commands, handle commands.
 '' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  curSpeedA := 33
-  curSpeedB := 33
+  curSpeedA := 40
+  curSpeedB := 40
 
   mc.init(MOT_AO1, MOT_AO2, MOT_PWMA, MOT_BO1, MOT_BO2, MOT_PWMB)
+  mc.setSpeed(mc#MOT_A, curSpeedB)
+  mc.setSpeed(mc#MOT_B, curSpeedB)
+
   ps.init(false, false, BAUD_RATE, RX_PIN, TX_PIN)
+
+  led.init(LED1, LED2, LED3, LED4, LED5, LED6, LED7)
+  led.animatePowerup(1)
 
   ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
 

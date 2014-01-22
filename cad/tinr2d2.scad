@@ -928,44 +928,44 @@ module led_panel()
 		// holes for all the LEDs forming a mouth
 		translate([0, can_rad + t1, can_hig - w1 - t1])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 		translate([+7, can_rad + t1, can_hig - w1 - t1])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 		translate([-7, can_rad + t1, can_hig - w1 - t1])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 
 		translate([+14, can_rad + t1, can_hig - w1 - t1 + 3.5])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 		translate([-14, can_rad + t1, can_hig - w1 - t1 + 3.5])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 
 		translate([+14, can_rad + t1, can_hig - w1 - t1 - 3.5])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 		translate([-14, can_rad + t1, can_hig - w1 - t1 - 3.5])
 			rotate([90, 0, 0])
-				cylinder(h=20, r=1.55);
+				cylinder(h=20, r=1.65);
 
 		// drill holes
 		translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 - 4 + w2 / 2])
 			rotate([90, 0, 0])
-				cylinder(h=t1, r=1.6);
+				cylinder(h=t1, r=1.7);
 		mirror([1, 0, 0])
 			translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 - 4 + w2 / 2])
 				rotate([90, 0, 0])
-					cylinder(h=t1, r=1.6);
+					cylinder(h=t1, r=1.7);
 	
 		translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 + 4 - w2 / 2])
 			rotate([90, 0, 0])
-				cylinder(h=t1, r=1.6);
+				cylinder(h=t1, r=1.7);
 		mirror([1, 0, 0])
 			translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 + 4 - w2 / 2])
 				rotate([90, 0, 0])
-					cylinder(h=t1, r=1.6);
+					cylinder(h=t1, r=1.7);
 	}
 }
 
