@@ -13,13 +13,8 @@
 can_hig=129;					// hight of tin can
 							// 129 is for lavazza espresso can
 can_tkn=2;					// thickness of tin can
-
-// ****
-// ** NOTE TO SELF: use 51.5 on next robot to make it fit NOT so tight !!!!
-// ****
-
-can_rad=51;					// radius of tin can
-							// 51 is for lavazza espresso can
+can_rad=51.5;				// radius of tin can
+							// 51.5 is for lavazza espresso can
 can_rad_inner=can_rad-4;
 
 base_hig=10;					// hight of top/bottom base
@@ -57,11 +52,14 @@ bod_rot=20;					// deg. of how much can is rotated in respect to the legs
 // print_leg2();
 
 // print_inlay();
-print_led_panel();
+// print_led_panel();
+print_speaker_box();
 
 /* some test views of single parts */
 
 // led_panel();
+
+// speaker_box();
 
 // inlay_base(1);
 
@@ -344,6 +342,18 @@ module top(hig, rad, tkn, leg_tkn)
 
 module battery1()
 {
+	// battery1_expensive();
+	battery1_cheap();
+}
+
+module battery2()
+{
+	// battery2_expensive();
+	battery2_cheap();
+}
+
+module battery1_expensive()
+{
 	w=34;
 	h=64;
 	t=13;
@@ -352,11 +362,33 @@ module battery1()
 		cube([w, t, h], center=true);
 }
 
-module battery2()
+module battery2_expensive()
 {
 	w=31;
 	h=52;
 	t=10;
+
+	translate([0, 28, -(76.5-h)/2-4])
+		cube([w, t, h], center=true);
+}
+
+// cheap pollin LiPo battery
+module battery1_cheap()
+{
+	w=30;
+	h=50;
+	t=11;
+
+	translate([0, 15, -(76.5-h)/2-4])
+		cube([w, t, h], center=true);
+}
+
+// cheap pollin LiPo battery
+module battery2_cheap()
+{
+	w=30;
+	h=50;
+	t=11;
 
 	translate([0, 28, -(76.5-h)/2-4])
 		cube([w, t, h], center=true);
@@ -458,7 +490,7 @@ module inlay(hig, rad, tkn, showboard)
 			difference()
 			{
 				translate([0, 15, -h1/2 + 15])
-					cube([38, 17, 30], center=true);	
+					cube([34, 14, 30], center=true);	
 
 				translate([0, 0, tkn+1])
 				{
@@ -472,20 +504,20 @@ module inlay(hig, rad, tkn, showboard)
 				mirror([1, 0, 0])
 					translate([9, 14.5, -h2/2-2*tkn])
 						cylinder(r=4, h=4);
-			translate([-20, 15, -18])
-				rotate([0, 90, 0])
-					cylinder(r=3, h=40);
-			translate([-20, 15, -26])
-				rotate([0, 90, 0])
-					cylinder(r=3, h=40);
-			translate([-20, 15, -34])
-				rotate([0, 90, 0])
-					cylinder(r=3, h=40);
+				translate([-20, 15, -18])
+					rotate([0, 90, 0])
+						cylinder(r=3, h=40);
+				translate([-20, 15, -26])
+					rotate([0, 90, 0])
+						cylinder(r=3, h=40);
+				translate([-20, 15, -34])
+					rotate([0, 90, 0])
+						cylinder(r=3, h=40);
 			}
 			difference()
 			{
 				translate([0, 28, -h1/2 + 15])
-					cube([35, 14, 30], center=true);	
+					cube([34, 14, 30], center=true);	
 
 				translate([0, 0, tkn+1])
 				{
@@ -824,6 +856,10 @@ module dome_top(rad, tkn)
 
 				// hole for the on/off switch
 				cube([22, 20.9, 20], center=true);
+				translate([0, rad/2, -tkn])
+					cylinder(h=tkn*4, r=4);
+				translate([0, -rad/2, -tkn])
+					cylinder(h=tkn*4, r=4);
 			}
 		}
 	
@@ -976,6 +1012,102 @@ module print_led_panel()
 			led_panel();
 }
 
+module speaker_box()
+{
+	w1 = 40;
+	w2 = 30;
+	t1 = 15;
+	t2 = 2;
+
+	rotate([0, 0, 90])
+	difference()
+	{
+
+		union()
+		{
+			translate([0, can_rad, can_hig - w1 - t1])
+			{
+				difference() 
+				{
+					cube([w1, t1, w2], center=true);
+					translate([0, -t2, 0])
+						cube([w1 - 2 * t2, t1 - t2, w2 - 2 * t2], center=true);
+				}
+			}
+
+			translate([0, can_rad + t1/2, can_hig - w1 - t1])
+			{
+				difference()
+				{
+					rotate([90, 0, 0])
+						cylinder(h=t1 - 1, r=(20.5 + t2)/2);
+	
+					rotate([90, 0, 0])
+						cylinder(h=t1 - 1, r=20.5/2);
+				}
+			}
+
+			translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 - 4 + w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1 - 1, r=4);
+
+			mirror([1, 0, 0])
+				translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 - 4 + w2 / 2])
+					rotate([90, 0, 0])
+						cylinder(h=t1 - 1, r=4);
+
+			translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 + 4 - w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1 - 1, r=4);
+
+			mirror([1, 0, 0])
+				translate([w1 / 2 - 4, can_rad + t1 / 2, can_hig - w1 - t1 + 4 - w2 / 2])
+					rotate([90, 0, 0])
+						cylinder(h=t1 - 1, r=4);
+		}
+
+		intersection() 
+		{
+			translate([0, 0, can_tkn])
+				cylinder(h=can_hig, r=can_rad);
+			translate([0, can_rad, can_hig - w1 - t1])
+				cube([w1, t1, w2], center=true);
+		}
+
+		// drill holes
+		translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 - 4 + w2 / 2])
+			rotate([90, 0, 0])
+				cylinder(h=t1, r=1.7);
+		mirror([1, 0, 0])
+			translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 - 4 + w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1, r=1.7);
+	
+		translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 + 4 - w2 / 2])
+			rotate([90, 0, 0])
+				cylinder(h=t1, r=1.7);
+		mirror([1, 0, 0])
+			translate([w1 / 2 - 4, can_rad + t1 / 2 + 1, can_hig - w1 - t1 + 4 - w2 / 2])
+				rotate([90, 0, 0])
+					cylinder(h=t1, r=1.7);
+
+		// riffles for speaker
+		translate([w1 / 2 - 20, can_rad + t1 / 2 -1, can_hig - w1 - t1 - 4 + w2 / 2 - 6])
+			cube([15, t2*2, t2], center=true);
+		translate([w1 / 2 - 20, can_rad + t1 / 2 -1, can_hig - w1 - t1 - 4 + w2 / 2 - 11])
+			cube([19, t2*2, t2], center=true);
+		translate([w1 / 2 - 20, can_rad + t1 / 2 -1, can_hig - w1 - t1 - 4 + w2 / 2 - 16])
+			cube([15, t2*2, t2], center=true);
+	}
+}
+
+module print_speaker_box()
+{
+	translate([can_rad, 0, can_rad + 7.5])
+		rotate([0, -90, 0])	
+			speaker_box();
+}
+
 module print_dome_top()
 {
 	translate([0, 0, base_rad*0.6+2])
@@ -1053,6 +1185,8 @@ module show_full_robot(showcan)
 				inlay_base(1);
 			}
 			led_panel();
+			translate([0, 0, -40])
+				speaker_box();
 		}
 		translate([-can_rad-can_rad*0.5, 0, -20])
 			rotate([0, 0, 90])
@@ -1081,6 +1215,9 @@ module show_exploded_robot()
 				inlay_base(0);
 
 			led_panel();
+
+			translate([0, 0, -40])
+				speaker_box();
 		}
 
 		translate([-can_rad-can_rad*0.5, 0, -40])

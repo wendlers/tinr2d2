@@ -140,8 +140,8 @@ OBJ
 
   ps	: "propshell"
   mc    : "tb6612fng"
-  pcm   : "pcm"
-  led   : "ledpanel"
+  se    : "soundeffects"
+  le    : "lighteffects"
 
 VAR
 
@@ -157,16 +157,22 @@ PUB main | i
   curSpeedA := 40
   curSpeedB := 40
 
+  le.start(LED1, LED2, LED3, LED4, LED5, LED6, LED7)
+  se.start(SPEAKER)
+
+  le.scheduleEffect(le#POWERUP)
+  se.scheduleEffect(se#SAD)
+  '' se.scheduleEffect(se#BEEP1)
+  '' se.scheduleEffect(se#BEEP1)
+
   mc.init(MOT_AO1, MOT_AO2, MOT_PWMA, MOT_BO1, MOT_BO2, MOT_PWMB)
   mc.setSpeed(mc#MOT_A, curSpeedB)
   mc.setSpeed(mc#MOT_B, curSpeedB)
 
   ps.init(false, false, BAUD_RATE, RX_PIN, TX_PIN)
-
-  led.init(LED1, LED2, LED3, LED4, LED5, LED6, LED7)
-  led.animatePowerup(1)
-
   ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
+
+  le.scheduleEffect(le#SAD)
 
   repeat
 
@@ -211,14 +217,19 @@ PRI cmdDrv(forMe) | dir
 
   if strcomp(dir, string("b"))
     mc.operateSync(mc#CMD_CCW)
+    le.scheduleEffect(le#HAPPY)
   elseif strcomp(dir, string("f"))
     mc.operateSync(mc#CMD_CW)
+    le.scheduleEffect(le#HAPPY)
   elseif strcomp(dir, string("l"))
     mc.operateAsync(mc#CMD_CCW, mc#CMD_CW)
+    le.scheduleEffect(le#HAPPY)
   elseif strcomp(dir, string("r"))
     mc.operateAsync(mc#CMD_CW, mc#CMD_CCW)
+    le.scheduleEffect(le#HAPPY)
   elseif strcomp(dir, string("s"))
     mc.operateSync(mc#CMD_STOP)
+    le.scheduleEffect(le#SAD)
   else
     ps.puts(string("!ERR 2", ps#CR, ps#LF))
     abort
@@ -293,14 +304,12 @@ PRI cmdPlaySound(forMe)
 '' // @param                    forMe                   Ture if command should be handled, false otherwise
 '' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  pcm.play8kHzU8(@wav_1, SPEAKER, wav_1_size)
+  if not forMe
+    return
+
+  se.scheduleEffect(se#beep1)
 
 DAT
-
-wav_1 byte
-File "r2d28bit.raw"
-
-wav_1_size long 5233
 
 {{
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
