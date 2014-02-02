@@ -72,9 +72,9 @@ VAR
 
 PUB main
 
-  init(14, 16, 18, 20, 22, 24, 26)
+  init(14, 24, 18, 22, 16, 26, 20)
 
-  '' setPattern(%0100000)
+  '' setPattern(%1000000)
 
   animatePowerup(4)
   animateAngry(10)
@@ -267,8 +267,6 @@ PUB animateTalk(times)
     setDot
     waitcnt(clkfreq/4 + cnt)
     setSmile
-    waitcnt(clkfreq/4 + cnt)
-    setOff
     waitcnt(clkfreq/4 + cnt)
 
 PUB setPattern(pattern) | pos1, pos2, pos3, pos4, pos5, pos6, pos7

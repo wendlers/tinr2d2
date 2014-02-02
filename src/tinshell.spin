@@ -107,34 +107,53 @@ CON
   _CLKMODE = XTAL1 + PLL16X                             ' External clock at 80MHz
   _XINFREQ = 5_000_000
 
-  '' Serial port settings for shell
-  '' BAUD_RATE 	= 8_761                                ' Turns out to be about 9600 with rcfast on my board
-  BAUD_RATE     = 9600
+  BAUD_RATE_V1     = 9_600
 
-  RX_PIN 	= 1
-  TX_PIN 	= 0
+  RX_PIN_V1 	   = 1
+  TX_PIN_V1 	   = 0
 
-  ''RX_PIN 		= 31
-  ''TX_PIN 		= 30
+  MOT_AO1_V1       = 3
+  MOT_AO2_V1       = 2
+  MOT_PWMA_V1      = 6
+  MOT_BO1_V1       = 5
+  MOT_BO2_V1       = 4
+  MOT_PWMB_V1      = 7
 
-  MOT_AO1       = 3
-  MOT_AO2       = 2
-  MOT_PWMA      = 6
-  MOT_BO1       = 5
-  MOT_BO2       = 4
-  MOT_PWMB      = 7
+  SPEAKER_V1       = 8
+  MB1000_V1        = 9
+
+  LED1_V1          = 16
+  LED2_V1          = 26
+  LED3_V1          = 18
+  LED4_V1          = 20
+  LED5_V1          = 24
+  LED6_V1          = 22
+  LED7_V1          = 14
+
+  BAUD_RATE_V2     = 115_200
+
+  RX_PIN_V2 	   = 1
+  TX_PIN_V2 	   = 0
+
+  MOT_AO1_V2       = 5
+  MOT_AO2_V2       = 4
+  MOT_PWMA_V2      = 6
+  MOT_BO1_V2       = 2
+  MOT_BO2_V2       = 3
+  MOT_PWMB_V2      = 7
+
+  SPEAKER_V2       = 8
+  MB1000_V2        = 9
+
+  LED1_V2          = 14
+  LED2_V2          = 24
+  LED3_V2          = 18
+  LED4_V2          = 22
+  LED5_V2          = 16
+  LED6_V2          = 26
+  LED7_V2          = 20
 
   MOT_SPEED_DELTA = 1
-
-  SPEAKER       = 10
-
-  LED1          = 14
-  LED2          = 16
-  LED3          = 18
-  LED4          = 20
-  LED5          = 22
-  LED6          = 24
-  LED7          = 26
 
 OBJ
 
@@ -142,11 +161,16 @@ OBJ
   mc    : "tb6612fng"
   se    : "soundeffects"
   le    : "lighteffects"
+  mb    : "mb1000"
 
 VAR
 
+  byte minSpeedA
+  byte minSpeedB
   byte curSpeedA
   byte curSpeedB
+  byte speedDelta
+  byte speedBoostDelta
 
 PUB main | i
 
@@ -154,31 +178,66 @@ PUB main | i
 '' // Main routine. Init the shell, prompt for commands, handle commands.
 '' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-  curSpeedA := 40
-  curSpeedB := 40
-
-  le.start(LED1, LED2, LED3, LED4, LED5, LED6, LED7)
-  se.start(SPEAKER)
-
-  le.scheduleEffect(le#POWERUP)
-  se.scheduleEffect(se#SAD)
-  '' se.scheduleEffect(se#BEEP1)
-  '' se.scheduleEffect(se#BEEP1)
-
-  mc.init(MOT_AO1, MOT_AO2, MOT_PWMA, MOT_BO1, MOT_BO2, MOT_PWMB)
-  mc.setSpeed(mc#MOT_A, curSpeedB)
-  mc.setSpeed(mc#MOT_B, curSpeedB)
-
-  ps.init(false, false, BAUD_RATE, RX_PIN, TX_PIN)
-  ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
-
-  le.scheduleEffect(le#SAD)
+  '' initV1
+  initV2
 
   repeat
 
     result := ps.prompt
 
     \cmdHandler(result)
+
+PRI initV1
+
+  minSpeedA  := 40
+  minSpeedB  := 40
+  speedDelta := 20
+
+  curSpeedA := 40
+  curSpeedB := 40
+
+  le.start(LED1_V1, LED2_V1, LED3_V1, LED4_V1, LED5_V1, LED6_V1, LED7_V1)
+  se.start(SPEAKER_V1)
+
+  le.scheduleEffect(le#POWERUP)
+  '' se.scheduleEffect(se#SAD)
+  se.scheduleEffect(se#BEEP1)
+  '' se.scheduleEffect(se#BEEP1)
+
+  mb.init(MB1000_V1)
+
+  mc.init(MOT_AO1_V1, MOT_AO2_V1, MOT_PWMA_V1, MOT_BO1_V1, MOT_BO2_V1, MOT_PWMB_V1)
+  mc.setSpeed(mc#MOT_A, curSpeedA)
+  mc.setSpeed(mc#MOT_B, curSpeedB)
+
+  ps.init(false, false, BAUD_RATE_V1, RX_PIN_V1, TX_PIN_V1)
+  ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
+
+PRI initV2
+
+  minSpeedA  := 40
+  minSpeedB  := 40
+  speedDelta := 20
+
+  curSpeedA := 40
+  curSpeedB := 40
+
+  le.start(LED1_V2, LED2_V2, LED3_V2, LED4_V2, LED5_V2, LED6_V2, LED7_V2)
+  se.start(SPEAKER_V2)
+
+  le.scheduleEffect(le#POWERUP)
+  '' se.scheduleEffect(se#SAD)
+  se.scheduleEffect(se#BEEP1)
+  '' se.scheduleEffect(se#BEEP1)
+
+  mb.init(MB1000_V2)
+
+  mc.init(MOT_AO1_V2, MOT_AO2_V2, MOT_PWMA_V2, MOT_BO1_V2, MOT_BO2_V2, MOT_PWMB_V2)
+  mc.setSpeed(mc#MOT_A, curSpeedA)
+  mc.setSpeed(mc#MOT_B, curSpeedB)
+
+  ps.init(false, false, BAUD_RATE_V2, RX_PIN_V2, TX_PIN_V2)
+  ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
 
 PRI cmdHandler(cmdLine)
 
@@ -198,10 +257,40 @@ PRI cmdHandler(cmdLine)
   cmdDrv(ps.commandDef(string("+d"), false , cmdLine))
   cmdSetSpeed(ps.commandDef(string("+s"), false , cmdLine))
   cmdPlaySound(ps.commandDef(string("+p"), false , cmdLine))
+  cmdGetRange(ps.commandDef(string("+r"), false , cmdLine))
 
   return true
+PRI slowDown(delay) | s
 
-PRI cmdDrv(forMe) | dir
+    ps.puts(string("!INFO slowDown:"))
+
+    repeat s from curSpeedA to minSpeedA
+      ps.puts(string(" "))
+      ps.putd(s)
+      mc.setSpeedAsync(s, s)
+      waitcnt(delay + cnt)
+
+    curSpeedA := minSpeedA
+    curSpeedB := minSpeedB
+
+    ps.puts(string(ps#CR, ps#LF))
+
+PRI speedUp(delay) | s
+
+    ps.puts(string("!INFO speedUp"))
+
+    repeat s from curSpeedA to (minSpeedA + speedDelta)
+      ps.puts(string(" "))
+      ps.putd(s)
+      mc.setSpeedAsync(s, s)
+      waitcnt(delay + cnt)
+
+    curSpeedA := minSpeedA + speedDelta
+    curSpeedB := minSpeedB + speedDelta
+
+    ps.puts(string(ps#CR, ps#LF))
+
+PRI cmdDrv(forMe) | dir, d
 
 '' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 '' // Drive tincan by using morots A and B
@@ -214,22 +303,34 @@ PRI cmdDrv(forMe) | dir
 
   ps.parseAndCheck(1, string("!ERR 1"), false)
   dir := ps.currentPar
+  d := clkfreq/64
 
   if strcomp(dir, string("b"))
+    slowDown(d)
     mc.operateSync(mc#CMD_CCW)
     le.scheduleEffect(le#HAPPY)
+    se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("f"))
+    slowDown(d)
     mc.operateSync(mc#CMD_CW)
+    speedUp(d)
     le.scheduleEffect(le#HAPPY)
+    se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("l"))
+    slowDown(d)
     mc.operateAsync(mc#CMD_CCW, mc#CMD_CW)
     le.scheduleEffect(le#HAPPY)
+    se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("r"))
+    slowDown(d)
     mc.operateAsync(mc#CMD_CW, mc#CMD_CCW)
     le.scheduleEffect(le#HAPPY)
+    se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("s"))
+    slowDown(d)
     mc.operateSync(mc#CMD_STOP)
     le.scheduleEffect(le#SAD)
+    se.scheduleEffect(se#SAD)
   else
     ps.puts(string("!ERR 2", ps#CR, ps#LF))
     abort
@@ -308,6 +409,28 @@ PRI cmdPlaySound(forMe)
     return
 
   se.scheduleEffect(se#beep1)
+  le.scheduleEffect(le#TALK)
+
+  ps.commandHandled
+
+PRI cmdGetRange(forMe) | r
+
+'' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+'' // Play typical R2D2 sound
+'' //
+'' // @param                    forMe                   Ture if command should be handled, false otherwise
+'' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  if not forMe
+    return
+
+  r := mb.getRangeCm
+
+  ps.puts(string("!INFO range (cm): "))
+  ps.putd(r)
+  ps.puts(string(ps#CR, ps#LF))
+
+  ps.commandHandled
 
 DAT
 

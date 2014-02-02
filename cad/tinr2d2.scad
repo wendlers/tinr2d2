@@ -46,14 +46,14 @@ bod_rot=20;					// deg. of how much can is rotated in respect to the legs
 
 // print_bottom_base();
 // print_top_base();
-// print_dome_top();
+print_dome_top();
 
 // print_leg1();
 // print_leg2();
 
 // print_inlay();
 // print_led_panel();
-print_speaker_box();
+// print_speaker_box();
 
 /* some test views of single parts */
 
