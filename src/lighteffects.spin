@@ -37,8 +37,6 @@
 
 CON
 
-  '' Nothing
-
   NONE     = 0
   TALK     = 1
   POWERUP  = 2
@@ -48,7 +46,7 @@ CON
 
 OBJ
 
-  led   : "ledpanel.spin"
+  led   : "ledpanel"
 
 VAR
 

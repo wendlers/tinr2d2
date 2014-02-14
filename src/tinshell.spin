@@ -153,24 +153,16 @@ CON
   LED6_V2          = 26
   LED7_V2          = 20
 
-  MOT_SPEED_DELTA = 1
-
 OBJ
 
   ps	: "propshell"
-  mc    : "tb6612fng"
+  dp    : "drivepilot"
   se    : "soundeffects"
   le    : "lighteffects"
-  mb    : "mb1000"
 
 VAR
 
-  byte minSpeedA
-  byte minSpeedB
-  byte curSpeedA
-  byte curSpeedB
-  byte speedDelta
-  byte speedBoostDelta
+  '' None
 
 PUB main | i
 
@@ -181,6 +173,8 @@ PUB main | i
   '' initV1
   initV2
 
+  dp.scheduleAction(dp#DRIVE_ST)
+
   repeat
 
     result := ps.prompt
@@ -189,52 +183,24 @@ PUB main | i
 
 PRI initV1
 
-  minSpeedA  := 40
-  minSpeedB  := 40
-  speedDelta := 20
-
-  curSpeedA := 40
-  curSpeedB := 40
-
   le.start(LED1_V1, LED2_V1, LED3_V1, LED4_V1, LED5_V1, LED6_V1, LED7_V1)
   se.start(SPEAKER_V1)
+  dp.start(MOT_AO1_V1, MOT_AO2_V1, MOT_PWMA_V1, MOT_BO1_V1, MOT_BO2_V1, MOT_PWMB_V1, MB1000_V1)
 
   le.scheduleEffect(le#POWERUP)
-  '' se.scheduleEffect(se#SAD)
   se.scheduleEffect(se#BEEP1)
-  '' se.scheduleEffect(se#BEEP1)
-
-  mb.init(MB1000_V1)
-
-  mc.init(MOT_AO1_V1, MOT_AO2_V1, MOT_PWMA_V1, MOT_BO1_V1, MOT_BO2_V1, MOT_PWMB_V1)
-  mc.setSpeed(mc#MOT_A, curSpeedA)
-  mc.setSpeed(mc#MOT_B, curSpeedB)
 
   ps.init(false, false, BAUD_RATE_V1, RX_PIN_V1, TX_PIN_V1)
   ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
 
 PRI initV2
 
-  minSpeedA  := 40
-  minSpeedB  := 40
-  speedDelta := 20
-
-  curSpeedA := 40
-  curSpeedB := 40
-
   le.start(LED1_V2, LED2_V2, LED3_V2, LED4_V2, LED5_V2, LED6_V2, LED7_V2)
   se.start(SPEAKER_V2)
+  dp.start(MOT_AO1_V2, MOT_AO2_V2, MOT_PWMA_V2, MOT_BO1_V2, MOT_BO2_V2, MOT_PWMB_V2, MB1000_V2)
 
   le.scheduleEffect(le#POWERUP)
-  '' se.scheduleEffect(se#SAD)
   se.scheduleEffect(se#BEEP1)
-  '' se.scheduleEffect(se#BEEP1)
-
-  mb.init(MB1000_V2)
-
-  mc.init(MOT_AO1_V2, MOT_AO2_V2, MOT_PWMA_V2, MOT_BO1_V2, MOT_BO2_V2, MOT_PWMB_V2)
-  mc.setSpeed(mc#MOT_A, curSpeedA)
-  mc.setSpeed(mc#MOT_B, curSpeedB)
 
   ps.init(false, false, BAUD_RATE_V2, RX_PIN_V2, TX_PIN_V2)
   ps.puts(string("!INFO tinshell ready", ps#CR, ps#LF))
@@ -255,40 +221,10 @@ PRI cmdHandler(cmdLine)
   '' - 3  command line to check command against
 
   cmdDrv(ps.commandDef(string("+d"), false , cmdLine))
-  cmdSetSpeed(ps.commandDef(string("+s"), false , cmdLine))
   cmdPlaySound(ps.commandDef(string("+p"), false , cmdLine))
   cmdGetRange(ps.commandDef(string("+r"), false , cmdLine))
 
   return true
-PRI slowDown(delay) | s
-
-    ps.puts(string("!INFO slowDown:"))
-
-    repeat s from curSpeedA to minSpeedA
-      ps.puts(string(" "))
-      ps.putd(s)
-      mc.setSpeedAsync(s, s)
-      waitcnt(delay + cnt)
-
-    curSpeedA := minSpeedA
-    curSpeedB := minSpeedB
-
-    ps.puts(string(ps#CR, ps#LF))
-
-PRI speedUp(delay) | s
-
-    ps.puts(string("!INFO speedUp"))
-
-    repeat s from curSpeedA to (minSpeedA + speedDelta)
-      ps.puts(string(" "))
-      ps.putd(s)
-      mc.setSpeedAsync(s, s)
-      waitcnt(delay + cnt)
-
-    curSpeedA := minSpeedA + speedDelta
-    curSpeedB := minSpeedB + speedDelta
-
-    ps.puts(string(ps#CR, ps#LF))
 
 PRI cmdDrv(forMe) | dir, d
 
@@ -303,97 +239,30 @@ PRI cmdDrv(forMe) | dir, d
 
   ps.parseAndCheck(1, string("!ERR 1"), false)
   dir := ps.currentPar
-  d := clkfreq/64
 
   if strcomp(dir, string("b"))
-    slowDown(d)
-    mc.operateSync(mc#CMD_CCW)
+    dp.scheduleAction(dp#DRIVE_BW)
     le.scheduleEffect(le#HAPPY)
     se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("f"))
-    slowDown(d)
-    mc.operateSync(mc#CMD_CW)
-    speedUp(d)
+    dp.scheduleAction(dp#DRIVE_FW)
     le.scheduleEffect(le#HAPPY)
     se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("l"))
-    slowDown(d)
-    mc.operateAsync(mc#CMD_CCW, mc#CMD_CW)
+    dp.scheduleAction(dp#DRIVE_TL)
     le.scheduleEffect(le#HAPPY)
     se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("r"))
-    slowDown(d)
-    mc.operateAsync(mc#CMD_CW, mc#CMD_CCW)
+    dp.scheduleAction(dp#DRIVE_TR)
     le.scheduleEffect(le#HAPPY)
     se.scheduleEffect(se#BEEP2)
   elseif strcomp(dir, string("s"))
-    slowDown(d)
-    mc.operateSync(mc#CMD_STOP)
+    dp.scheduleAction(dp#DRIVE_ST)
     le.scheduleEffect(le#SAD)
     se.scheduleEffect(se#SAD)
   else
     ps.puts(string("!ERR 2", ps#CR, ps#LF))
     abort
-
-  ps.commandHandled
-
-PRI cmdSetSpeed(forMe) | ab, a, b, d, speed
-
-'' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-'' // Drive tincan by using morots A and B
-'' //
-'' // @param                    forMe                   Ture if command should be handled, false otherwise
-'' ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  if not forMe
-    return
-
-  a := false
-  b := false
-  d := 0
-
-  ps.parseAndCheck(1, string("!ERR 1"), false)
-  ab := ps.currentPar
-
-  if strcomp(ab, string("a"))
-    a := true
-  elseif strcomp(ab, string("b"))
-    b := true
-  else
-    ps.puts(string("!ERR 2", ps#CR, ps#LF))
-    abort
-
-  ps.parseAndCheck(2, string("!ERR 3"), false)
-  speed := ps.currentPar
-
-  if strcomp(speed, string("+"))
-    d :=  MOT_SPEED_DELTA
-  elseif strcomp(speed, string("-"))
-    d := -MOT_SPEED_DELTA
-  else
-    ps.puts(string("!ERR 4", ps#CR, ps#LF))
-    abort
-
-  if a
-    curSpeedA := curSpeedA + d
-    if curSpeedA > 100
-      curSpeedA := 100
-    elseif curSpeedA < 0
-      curSpeedA := 0
-    mc.setSpeed(mc#MOT_A, curSpeedA)
-    ps.puts(string("!INFO speedA: "))
-    ps.putd(curSpeedA)
-    ps.puts(string(ps#CR, ps#LF))
-  elseif b
-    curSpeedB := curSpeedB + d
-    if curSpeedB > 100
-      curSpeedB := 100
-    elseif curSpeedB < 0
-      curSpeedB := 0
-    mc.setSpeed(mc#MOT_B, curSpeedB)
-    ps.puts(string("!INFO speedB: "))
-    ps.putd(curSpeedB)
-    ps.puts(string(ps#CR, ps#LF))
 
   ps.commandHandled
 
@@ -424,7 +293,7 @@ PRI cmdGetRange(forMe) | r
   if not forMe
     return
 
-  r := mb.getRangeCm
+  r := dp.getCurDist
 
   ps.puts(string("!INFO range (cm): "))
   ps.putd(r)
