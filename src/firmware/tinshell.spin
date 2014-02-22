@@ -264,6 +264,9 @@ PRI cmdDrv(forMe) | dir, d
     ps.puts(string("!ERR 2", ps#CR, ps#LF))
     abort
 
+  ps.puts(string("!INFO OK"))
+  ps.puts(string(ps#CR, ps#LF))
+
   ps.commandHandled
 
 PRI cmdPlaySound(forMe)
@@ -295,7 +298,7 @@ PRI cmdGetRange(forMe) | r
 
   r := dp.getCurDist
 
-  ps.puts(string("!INFO range (cm): "))
+  ps.puts(string("!INFO r(cm): "))
   ps.putd(r)
   ps.puts(string(ps#CR, ps#LF))
 

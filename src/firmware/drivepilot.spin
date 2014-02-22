@@ -105,7 +105,7 @@ PUB start(aPinAO1, aPinAO2, aPinPWMA, aPinBO1, aPinBO2, aPinPWMB, aPinMB)
   curSpeedB := 40
 
   speedDelta := 20
-  speedDelay := 70
+  speedDelay := 80
 
   curDist := 0
 
@@ -149,31 +149,31 @@ PRI processAction
   dbg.writeString(string("ProcessAction "))
 
   if actionCurrent == DRIVE_FW
-    dbg.writeString(string("DRIVE_FW "))
+    '' dbg.writeString(string("DRIVE_FW "))
     antiFlippOverAssistent
     mc.operateSync(mc#CMD_CW)
     speedUp
-    dbg.writeString(string(" OK"))
+    '' dbg.writeString(string(" OK"))
   elseif actionCurrent == DRIVE_BW
-    dbg.writeString(string("DRIVE_BW "))
+    '' dbg.writeString(string("DRIVE_BW "))
     antiFlippOverAssistent
     mc.operateSync(mc#CMD_CCW)
-    dbg.writeString(string(" OK"))
+    '' dbg.writeString(string(" OK"))
   elseif actionCurrent == DRIVE_TL
-    dbg.writeString(string("DRIVE_TL "))
+    '' dbg.writeString(string("DRIVE_TL "))
     antiFlippOverAssistent
     mc.operateAsync(mc#CMD_CCW, mc#CMD_CW)
-    dbg.writeString(string(" OK"))
+    '' dbg.writeString(string(" OK"))
   elseif actionCurrent == DRIVE_TR
-    dbg.writeString(string("DRIVE_TR "))
+    '' dbg.writeString(string("DRIVE_TR "))
     antiFlippOverAssistent
     mc.operateAsync(mc#CMD_CW, mc#CMD_CCW)
-    dbg.writeString(string(" OK"))
+    '' dbg.writeString(string(" OK"))
   elseif actionCurrent == DRIVE_ST
-    dbg.writeString(string("DRIVE_ST "))
+    '' dbg.writeString(string("DRIVE_ST "))
     antiFlippOverAssistent
     mc.operateSync(mc#CMD_STOP)
-    dbg.writeString(string(" OK"))
+    '' dbg.writeString(string(" OK"))
 
   dbg.writeString(string(10, 13))
 
@@ -185,8 +185,8 @@ PRI antiFlippOverAssistent
     slowDown
 
     '' omit flipp overs cause by rapid direction changes
-    if actionLast == DRIVE_FW or actionLast == DRIVE_BW  ' or actionLast == DRIVE_ST
-      waitcnt(clkfreq / 2 + cnt)
+    if actionLast == DRIVE_BW and actionCurrent == DRIVE_FW  ' or actionLast == DRIVE_ST
+      waitcnt(clkfreq + cnt)
 
 PRI antiCollisionAssistent | emBrCnt
 
@@ -205,7 +205,7 @@ PRI slowDown | s
 
     repeat s from curSpeedA to minSpeedA
       waitcnt(clkfreq / speedDelay + cnt)
-      dbg.writeString(string("-"))
+      '' dbg.writeString(string("-"))
       mc.setSpeedAsync(s, s)
 
     curSpeedA := minSpeedA
@@ -215,7 +215,7 @@ PRI speedUp | s
 
     repeat s from curSpeedA to (minSpeedA + speedDelta)
       waitcnt(clkfreq / speedDelay + cnt)
-      dbg.writeString(string("+"))
+      '' dbg.writeString(string("+"))
       mc.setSpeedAsync(s, s)
 
     curSpeedA := minSpeedA + speedDelta
