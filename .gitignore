@@ -1,0 +1,5 @@
+.*.swp 
+src/android/TinControl/code/
+*.jar
+src/pyremote/.idea/
+*.pyc
